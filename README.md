@@ -1,6 +1,6 @@
 # H1B Wage Map
 
-Production-ready full-stack dashboard for visualizing H-1B prevailing wage levels by US county, now configured to deploy as a static GitHub Pages site.
+Production-ready full-stack dashboard for visualizing H-1B prevailing wage levels by US county.
 
 ## Stack
 - Next.js (App Router) + React + TypeScript
@@ -23,9 +23,10 @@ Production-ready full-stack dashboard for visualizing H-1B prevailing wage level
 ## Project Structure
 
 ```text
-.github/workflows/
-  deploy-pages.yml
 app/
+  api/
+    job-titles/route.ts
+    wages/route.ts
   globals.css
   layout.tsx
   page.tsx
@@ -41,34 +42,16 @@ data/
   reference/county_fips_reference.csv
   processed/h1b_wage_by_county_job.json
   processed/h1b_wage_sample.json
-public/
-  data/h1b_wage_by_county_job.json
 ```
 
-## Local Setup
+## Setup
 
 ```bash
 npm install
-npm run process:data
 npm run dev
 ```
 
-Open `http://localhost:3000`.
-
-## GitHub Pages Deployment
-
-This project uses static export (`output: 'export'`) and deploys from GitHub Actions.
-
-1. Push to `main` (or `master`).
-2. In GitHub repository settings:
-   - Go to **Settings → Pages**
-   - Set **Source** to **GitHub Actions**
-3. Workflow `.github/workflows/deploy-pages.yml` will:
-   - Install dependencies
-   - Build static files into `out/`
-   - Deploy to GitHub Pages
-
-The app automatically sets Next.js `basePath`/`assetPrefix` to `/<repo-name>` during CI.
+Open http://localhost:3000.
 
 ## Data processing (OFLC)
 
@@ -84,12 +67,11 @@ npm run process:data
 
 ### ETL behavior
 - Normalizes county names (`County` removal, case normalization, `Saint -> St`)
-- Uses state + county lookup to fill missing FIPS from reference mapping file
+- Uses state + county lookup to fill missing FIPS from Census-style mapping file
 - Annualizes hourly/daily/weekly/monthly wages
 - Aggregates by `county_fips + job_title`
 - Computes median `level_1..level_4`
 - Logs unmatched counties to `data/processed/unmatched_counties.csv`
-- Syncs static frontend data to `public/data/h1b_wage_by_county_job.json`
 
 ### Output format
 
@@ -108,3 +90,8 @@ npm run process:data
   }
 }
 ```
+
+## Notes for scaling
+- Keep the large processed JSON in object storage/CDN and cache at edge.
+- Split wages by job title shards if payload grows too large.
+- Add prebuilt vector tiles for county geometries to reduce initial map load.

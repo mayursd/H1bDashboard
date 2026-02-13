@@ -19,15 +19,11 @@ export default function HomePage() {
   const [selectedCountyFips, setSelectedCountyFips] = useState<string | null>(null);
 
   useEffect(() => {
-    const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
-
     Promise.all([
-      fetch(`${basePath}/data/h1b_wage_by_county_job.json`).then((r) => r.json()),
+      fetch("/api/job-titles").then((r) => r.json()),
+      fetch("/api/wages").then((r) => r.json()),
       fetch("https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json").then((r) => r.json()),
-    ]).then(([wages, counties]) => {
-      const titles = Array.from(new Set(Object.values(wages as WageMapType).map((r) => r.job_title))).sort((a, b) =>
-        a.localeCompare(b)
-      );
+    ]).then(([titles, wages, counties]) => {
       setJobTitles(titles);
       setSelectedJobTitle(titles[0] || "");
       setWagesByKey(wages);
@@ -77,7 +73,7 @@ export default function HomePage() {
         </div>
       </aside>
 
-      <section className="h-[70vh] rounded-xl bg-white p-2 shadow transition-colors duration-500 lg:h-[calc(100vh-2rem)]">
+      <section className="h-[70vh] rounded-xl bg-white p-2 shadow lg:h-[calc(100vh-2rem)] transition-colors duration-500">
         {geojson ? (
           <WageMap
             geojson={geojson}
