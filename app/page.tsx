@@ -10,11 +10,6 @@ const WageMap = dynamic(() => import("@/components/WageMap"), { ssr: false });
 const SALARY_MIN = 30000;
 const SALARY_MAX = 300000;
 
-const formatNumber = (value: number) => {
-  const integer = Math.round(value);
-  return String(integer).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-};
-
 export default function HomePage() {
   const [jobTitles, setJobTitles] = useState<string[]>([]);
   const [wagesByKey, setWagesByKey] = useState<WageMapType>({});
@@ -24,15 +19,11 @@ export default function HomePage() {
   const [selectedCountyFips, setSelectedCountyFips] = useState<string | null>(null);
 
   useEffect(() => {
-    const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
-
     Promise.all([
-      fetch(`${basePath}/data/h1b_wage_by_county_job.json`).then((r) => r.json()),
+      fetch("/api/job-titles").then((r) => r.json()),
+      fetch("/api/wages").then((r) => r.json()),
       fetch("https://raw.githubusercontent.com/plotly/datasets/master/geojson-counties-fips.json").then((r) => r.json()),
-    ]).then(([wages, counties]) => {
-      const titles = Array.from(new Set(Object.values(wages as WageMapType).map((r) => r.job_title))).sort((a, b) =>
-        a.localeCompare(b)
-      );
+    ]).then(([titles, wages, counties]) => {
       setJobTitles(titles);
       setSelectedJobTitle(titles[0] || "");
       setWagesByKey(wages);
@@ -53,9 +44,16 @@ export default function HomePage() {
         <h1 className="text-2xl font-bold">H1B Wage Map</h1>
         <p className="mt-2 text-sm text-slate-600">Compare your salary against OFLC prevailing wage levels by county.</p>
 
-        <label className="mt-4 block text-sm font-semibold">
-          Base Salary ($<span suppressHydrationWarning>{formatNumber(baseSalary)}</span>)
-        </label>
+        <label className="mt-4 block text-sm font-semibold">Job Title</label>
+        <select className="mt-1 w-full rounded border p-2" value={selectedJobTitle} onChange={(e) => setSelectedJobTitle(e.target.value)}>
+          {jobTitles.map((title) => (
+            <option key={title} value={title}>
+              {title}
+            </option>
+          ))}
+        </select>
+
+        <label className="mt-4 block text-sm font-semibold">Base Salary (${baseSalary.toLocaleString()})</label>
         <input
           type="range"
           min={SALARY_MIN}
@@ -67,15 +65,6 @@ export default function HomePage() {
         />
         <p className="text-xs text-slate-500">Range: $30,000 - $300,000</p>
 
-        <label className="mt-4 block text-sm font-semibold">Job Title</label>
-        <select className="mt-1 w-full rounded border p-2" value={selectedJobTitle} onChange={(e) => setSelectedJobTitle(e.target.value)}>
-          {jobTitles.map((title) => (
-            <option key={title} value={title}>
-              {title}
-            </option>
-          ))}
-        </select>
-
         <div className="mt-6 space-y-2 text-sm">
           <p><span className="inline-block h-3 w-3 rounded bg-green-600" /> Strong (≥ Level 3)</p>
           <p><span className="inline-block h-3 w-3 rounded bg-blue-600" /> Good (≥ Level 2)</p>
@@ -84,7 +73,7 @@ export default function HomePage() {
         </div>
       </aside>
 
-      <section className="h-[70vh] rounded-xl bg-white p-2 shadow transition-colors duration-500 lg:h-[calc(100vh-2rem)]">
+      <section className="h-[70vh] rounded-xl bg-white p-2 shadow lg:h-[calc(100vh-2rem)] transition-colors duration-500">
         {geojson ? (
           <WageMap
             geojson={geojson}
@@ -103,14 +92,14 @@ export default function HomePage() {
         {selectedRecord ? (
           <div className="mt-3 space-y-1 text-sm">
             <p className="font-semibold">{selectedRecord.county_name}, {selectedRecord.state}</p>
-            <p>Base Salary: $<span suppressHydrationWarning>{formatNumber(baseSalary)}</span></p>
-            <p>Level 1: ${formatNumber(selectedRecord.level_1)}</p>
-            <p>Level 2: ${formatNumber(selectedRecord.level_2)}</p>
-            <p>Level 3: ${formatNumber(selectedRecord.level_3)}</p>
-            <p>Level 4: ${formatNumber(selectedRecord.level_4)}</p>
+            <p>Base Salary: ${baseSalary.toLocaleString()}</p>
+            <p>Level 1: ${selectedRecord.level_1.toLocaleString()}</p>
+            <p>Level 2: ${selectedRecord.level_2.toLocaleString()}</p>
+            <p>Level 3: ${selectedRecord.level_3.toLocaleString()}</p>
+            <p>Level 4: ${selectedRecord.level_4.toLocaleString()}</p>
             <p className="mt-2 font-medium text-indigo-700">
               {raiseForL3 && raiseForL3 > 0
-                ? `Raise offer by $${formatNumber(raiseForL3)} to reach Level 3`
+                ? `Raise offer by $${raiseForL3.toLocaleString()} to reach Level 3`
                 : "Base salary meets or exceeds Level 3"}
             </p>
           </div>
