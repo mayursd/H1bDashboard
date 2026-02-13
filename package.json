@@ -7,8 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "process:data": "python3 scripts/process_oflc.py --input data/raw/sample_oflc_lca.csv --county-map data/reference/county_fips_reference.csv --output data/processed/h1b_wage_by_county_job.json --sample-output data/processed/h1b_wage_sample.json --unmatched-log data/processed/unmatched_counties.csv --public-output public/data/h1b_wage_by_county_job.json",
-    "serve:static": "python3 -m http.server 8080 -d out"
+    "process:data": "python3 scripts/process_oflc.py --input data/raw/sample_oflc_lca.csv --county-map data/reference/county_fips_reference.csv --output data/processed/h1b_wage_by_county_job.json --sample-output data/processed/h1b_wage_sample.json --unmatched-log data/processed/unmatched_counties.csv"
   },
   "dependencies": {
     "leaflet": "^1.9.4",

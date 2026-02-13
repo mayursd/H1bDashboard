@@ -18,15 +18,10 @@ function MapClickReset({ onCountySelect }: { onCountySelect: (fips: string | nul
   return null;
 }
 
-const format = (v: number) => String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-
 export default function WageMap({ geojson, selectedJobTitle, baseSalary, wagesByKey, onCountySelect }: Props) {
   return (
-    <MapContainer center={[37.8, -96]} zoom={4} minZoom={3} className="h-full w-full">
-      <TileLayer
-        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-        attribution='&copy; OpenStreetMap contributors &copy; CARTO'
-      />
+    <MapContainer center={[37.8, -96]} zoom={4} minZoom={3} className="h-full w-full rounded-xl">
+      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution='&copy; OpenStreetMap contributors' />
       <MapClickReset onCountySelect={onCountySelect} />
       <GeoJSON
         data={geojson as FeatureCollection<Geometry>}
@@ -34,9 +29,9 @@ export default function WageMap({ geojson, selectedJobTitle, baseSalary, wagesBy
           const fips = feature?.properties?.GEOID as string;
           const rec = wagesByKey[`${fips}_${selectedJobTitle}`];
           return {
-            color: "#0f172a",
-            weight: 0.4,
-            fillOpacity: 0.78,
+            color: "#fff",
+            weight: 0.25,
+            fillOpacity: 0.75,
             fillColor: getBandColor(getBand(baseSalary, rec)),
           };
         }}
@@ -44,14 +39,14 @@ export default function WageMap({ geojson, selectedJobTitle, baseSalary, wagesBy
           const fips = feature.properties?.GEOID as string;
           const rec = wagesByKey[`${fips}_${selectedJobTitle}`];
           const tooltip = rec
-            ? `${rec.county_name}, ${rec.state}\nL1: $${format(rec.level_1)}\nL2: $${format(rec.level_2)}\nL3: $${format(rec.level_3)}\nL4: $${format(rec.level_4)}`
+            ? `${rec.county_name}, ${rec.state}\nL1: $${rec.level_1.toLocaleString()}\nL2: $${rec.level_2.toLocaleString()}\nL3: $${rec.level_3.toLocaleString()}\nL4: $${rec.level_4.toLocaleString()}`
             : `${feature.properties?.NAME}\nNo wage data for ${selectedJobTitle}`;
 
           layer.bindTooltip(tooltip);
           layer.on({
             click: () => onCountySelect(fips),
-            mouseover: () => layer.setStyle({ weight: 1.2 }),
-            mouseout: () => layer.setStyle({ weight: 0.4 }),
+            mouseover: () => layer.setStyle({ weight: 1 }),
+            mouseout: () => layer.setStyle({ weight: 0.25 }),
           });
         }}
       />
