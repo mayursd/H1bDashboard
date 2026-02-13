@@ -1,0 +1,47 @@
+name: Refresh OFLC wage dataset
+
+on:
+  schedule:
+    - cron: "0 8 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install ETL dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas openpyxl requests
+
+      - name: Fetch latest OFLC disclosure files
+        run: python scripts/fetch_oflc_disclosure.py --output data/raw/oflc_lca_latest.csv --limit 4
+
+      - name: Process county wage JSON
+        run: |
+          python scripts/process_oflc.py \
+            --input data/raw/oflc_lca_latest.csv \
+            --county-map data/reference/county_fips_reference.csv \
+            --output data/processed/h1b_wage_by_county_job.json \
+            --sample-output data/processed/h1b_wage_sample.json \
+            --unmatched-log data/processed/unmatched_counties.csv \
+            --public-output public/data/h1b_wage_by_county_job.json
+
+      - name: Commit refreshed data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/raw/oflc_lca_latest.csv data/processed/h1b_wage_by_county_job.json data/processed/h1b_wage_sample.json data/processed/unmatched_counties.csv public/data/h1b_wage_by_county_job.json
+          git diff --cached --quiet || git commit -m "chore(data): refresh OFLC county wage dataset"
+          git push
