@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OFLC County Wage Comparator</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  </head>
+  <body>
+    <main class="container">
+      <header>
+        <h1>US County Wage Dashboard (OFLC Data)</h1>
+        <p>
+          Enter a role and your wage. The dashboard loads OFLC disclosure data and
+          color-codes counties by how county average wages compare with your wage.
+        </p>
+      </header>
+
+      <section class="controls">
+        <div class="row">
+          <label for="roleInput">Role</label>
+          <input id="roleInput" list="roleSuggestions" placeholder="e.g. SOFTWARE ENGINEER" />
+          <datalist id="roleSuggestions"></datalist>
+        </div>
+        <div class="row">
+          <label for="userWage">Your Wage (USD/year)</label>
+          <input id="userWage" type="number" min="1" step="1000" placeholder="e.g. 140000" />
+        </div>
+        <button id="analyzeBtn" type="button" disabled>Analyze Counties</button>
+        <small id="loadStatus">Loading OFLC datasets…</small>
+      </section>
+
+      <section class="stats" id="stats"></section>
+      <section>
+        <div id="map" role="img" aria-label="County wage comparison map"></div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
