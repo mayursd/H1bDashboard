@@ -68,7 +68,6 @@ def main() -> None:
     parser.add_argument("--output", required=True)
     parser.add_argument("--sample-output", required=False)
     parser.add_argument("--unmatched-log", required=True)
-    parser.add_argument("--public-output", required=False)
     args = parser.parse_args()
 
     county_lookup = load_county_map(Path(args.county_map))
@@ -142,13 +141,7 @@ def main() -> None:
 
     out = Path(args.output)
     out.parent.mkdir(parents=True, exist_ok=True)
-    output_json = json.dumps(result, indent=2)
-    out.write_text(output_json)
-
-    if args.public_output:
-        public_out = Path(args.public_output)
-        public_out.parent.mkdir(parents=True, exist_ok=True)
-        public_out.write_text(output_json)
+    out.write_text(json.dumps(result, indent=2))
 
     if args.sample_output:
         sample_keys = list(result.keys())[:1000]
