@@ -1,0 +1,68 @@
+{
+  "06037_Software Developer": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles",
+    "state": "CA",
+    "job_title": "Software Developer",
+    "level_1": 94000,
+    "level_2": 120000,
+    "level_3": 146000,
+    "level_4": 172000,
+    "source_count": 2
+  },
+  "36061_Software Developer": {
+    "county_fips": "36061",
+    "county_name": "New York",
+    "state": "NY",
+    "job_title": "Software Developer",
+    "level_1": 101000,
+    "level_2": 132000,
+    "level_3": 163000,
+    "level_4": 194000,
+    "source_count": 1
+  },
+  "53033_Software Developer": {
+    "county_fips": "53033",
+    "county_name": "King",
+    "state": "WA",
+    "job_title": "Software Developer",
+    "level_1": 51,
+    "level_2": 64,
+    "level_3": 77,
+    "level_4": 90,
+    "source_count": 1
+  },
+  "17031_Data Scientist": {
+    "county_fips": "17031",
+    "county_name": "Cook",
+    "state": "IL",
+    "job_title": "Data Scientist",
+    "level_1": 89000,
+    "level_2": 114000,
+    "level_3": 139000,
+    "level_4": 164000,
+    "source_count": 1
+  },
+  "29189_Data Scientist": {
+    "county_fips": "29189",
+    "county_name": "St. Louis",
+    "state": "MO",
+    "job_title": "Data Scientist",
+    "level_1": 76000,
+    "level_2": 97000,
+    "level_3": 118000,
+    "level_4": 140000,
+    "source_count": 1
+  },
+  "48453_Data Scientist": {
+    "county_fips": "48453",
+    "county_name": "Travis",
+    "state": "TX",
+    "job_title": "Data Scientist",
+    "level_1": 90480,
+    "level_2": 116480,
+    "level_3": 142688,
+    "level_4": 168896,
+    "source_count": 1
+  }
+}
